@@ -18,17 +18,24 @@ session_start();
 if(empty($_SESSION["username"])){ header("location: login.php");}
 include("db.php");
 $db = new sql();
-$name = ($db->getUser($_SESSION["username"]))["name"];
 
-if(!empty($_POST["mention"]) && !empty($_POST["grade"]) && !empty($_POST["name"])){
+$userinfo = $db->getUser($_SESSION["username"]);
+if($userinfo["role"]=="prof"){ header("location: index.php");}
+$name = $userinfo["name"];
+
+
+if(!empty($_POST["class"]) && !empty($_POST["name"])){
 	$newname = "";
 	if($name!=$_POST["name"]){ $newname = $_POST["name"];}
-	if($db->newstudent($_SESSION["username"], $_POST["grade"], $_POST["mention"], $newname)){
+	if($db->newstudent($_SESSION["username"], $_POST["class"], $newname)){
 	   header("location: index.php");
 	}else{
 	   echo("<span>Failed to save student profile.</span>");
 	}
 }
+
+$classes = $db->getclass();
+
 
 ?>
 	<div id="wrapper" align="center">
@@ -36,25 +43,16 @@ if(!empty($_POST["mention"]) && !empty($_POST["grade"]) && !empty($_POST["name"]
 	<form action="" method="POST">
 		<span>Name:<input name="name" type="text" value="<?php echo(htmlentities($name));?>" /></span>
 		<div>
-		  <label>Mention: </label>
-		  <select name="mention">
-			<option value="Computer Science">Computer Science</option>
-			<option value="Biology">Biology</option>
-			<option value="mention2">mention2</option>
-			<option value="mention3">mention3</option>
-			<option value="mention4">mention4</option>
-			<option value="mention5">mention5</option>
+		  <label>Classes: </label>
+		  <select name="class">
+			<?php
+			  foreach($classes as $item){
+				  
+				  echo("<option value='{$item["class_name"]}'>{$item["class_name"]}</option>");
+			  }
+			?>
 		  </select></div>
-		  <div>
-			 <label>Grade: </label>
-		  <select name="grade">
-			<option value="L1">L1</option>
-			<option value="L2">L2</option>
-			<option value="L3">L3</option>
-			<option value="M1">M1</option>
-			<option value="M2">M2</option>
-			<option value="etc">etc</option>
-		  </select></div>
+		
 		  
 		<input type="submit" value="Save"/>
 	</form>

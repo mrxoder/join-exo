@@ -5,14 +5,17 @@ if(empty($_SESSION["username"])){ header("location: login.php");}
 include("db.php");
 $db = new sql();
 $user = $db->getUser($_SESSION["username"]);
+
+if(empty($_SESSION["role"])){
+   $_SESSION["role"] = $user["role"];
+}
+
 $data = [];
 if($user["role"]=="student"){
-   $d = $db->getStudent($user["id"]);
-   $data["mention"]=$d["mention"];
-   $data["grade"]=$d["grade"];
+   $data["Class"]=$user["class_name"];
 }elseif($user["role"]=="prof"){
-   $d = $db->getProf($user["id"]);
-   $data["Teach"]=$d["course"];
+   $data["Teach"]=$user["course_name"];
+   $data["Class"]=$user["class_name"];
 }
 ?>
 
@@ -33,29 +36,34 @@ if($user["role"]=="student"){
 </head>
 
 <body>
-	<div class="container" align="center">
-	<div>Name: <?php echo(htmlentities($user["name"]));?></div>
-	<div>Role: <?php echo(htmlentities($user["role"]));?></div>
-	<div>
+	<div class="container">
+	<div class="list-group" align="center">
+	<div class="list-group-item ">Name: <?php echo(htmlentities($user["name"]));?></div>
+	<div class="list-group-item ">Role: <?php echo(htmlentities($user["role"]));?></div>
+	
 	<?php
 	   foreach($data as $key => $value){
-		   echo("<div>$key: $value</div>");
+		   if($key=="Class"){
+			  echo("<div class='list-group-item '>$key:<a href='class.php?class=$value'>$value</a></div>");
+		   }else{
+		      echo("<div class='list-group-item '>$key: $value</div>");
+		   }
 	   }
 	   
 	   if($user["role"]=="Not defined"){
 	?>
-	<div class="link">
-	<a href="prof.php">Edit as Professor</a>
-	<a href="student.php">Edit as Student</a></div>
+	<div class="list-group-item link">
+	   <a href="prof.php">Edit as Professor</a>
+	   <a href="student.php">Edit as Student</a>
 	<?php
 	 }elseif($user["role"]=="prof"){
 	?>
 	
-	<a href="prof.php">Edit</a>
+	<div class="list-group-item link"><a href="prof.php">Edit</a>
 	
 	
 	<?php }elseif($user["role"]=="student"){ ?>
-		<a href="student.php">Edit</a>
+		<div class="list-group-item link"><a href="student.php">Edit</a>
 		
 	<?php }?>
 	<a href="logout.php">logout</a></div>
