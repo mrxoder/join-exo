@@ -23,10 +23,14 @@ $userinfo = $db->getUser($_SESSION["username"]);
 if($userinfo["role"]=="prof"){ header("location: index.php");}
 $name = $userinfo["name"];
 
+$classes = $db->getclass();
+
 
 if(!empty($_POST["class"]) && !empty($_POST["name"])){
+	
 	$newname = "";
 	if($name!=$_POST["name"]){ $newname = $_POST["name"];}
+	
 	if($db->newstudent($_SESSION["username"], $_POST["class"], $newname)){
 	   header("location: index.php");
 	}else{
@@ -34,7 +38,7 @@ if(!empty($_POST["class"]) && !empty($_POST["name"])){
 	}
 }
 
-$classes = $db->getclass();
+
 
 
 ?>

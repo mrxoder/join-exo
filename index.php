@@ -12,8 +12,11 @@ if(empty($_SESSION["role"])){
 
 $data = [];
 if($user["role"]=="student"){
+	
    $data["Class"]=$user["class_name"];
+   
 }elseif($user["role"]=="prof"){
+   
    $data["Teach"]=$user["course_name"];
    $data["Class"]=$user["class_name"];
 }

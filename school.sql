@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : jeu. 01 déc. 2022 à 19:18
+-- Généré le : ven. 02 déc. 2022 à 12:51
 -- Version du serveur :  10.4.14-MariaDB
 -- Version de PHP : 7.2.34
 
@@ -51,6 +51,16 @@ CREATE TABLE `courses` (
   `course_name` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Déchargement des données de la table `courses`
+--
+
+INSERT INTO `courses` (`id`, `course_name`) VALUES
+(5, 'Mathematic'),
+(6, 'Physic'),
+(7, 'French'),
+(8, 'English');
+
 -- --------------------------------------------------------
 
 --
@@ -70,24 +80,9 @@ CREATE TABLE `prof` (
 --
 
 CREATE TABLE `students` (
+  `user_id` int(100) NOT NULL,
   `class_id` int(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Déchargement des données de la table `students`
---
-
-INSERT INTO `students` (`class_id`) VALUES
-(1),
-(1),
-(1),
-(1),
-(1),
-(2),
-(2),
-(2),
-(2),
-(2);
 
 -- --------------------------------------------------------
 
@@ -139,13 +134,13 @@ ALTER TABLE `classes`
 -- AUTO_INCREMENT pour la table `courses`
 --
 ALTER TABLE `courses`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
