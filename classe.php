@@ -22,8 +22,8 @@ $db = new sql();
 <body class="bg-light">
 	 
   <div class="sidebar">
-	  <a href="index.php" class="active" >School</a>
-	  <a href="classe.php">Classe</a>
+	  <a href="index.php"  >School</a>
+	  <a href="classe.php" class="active" >Classe</a>
 	  <a href="student.php">Etudiant</a>
 	  <a href="prof.php">Professeur</a>
 	  <a href="logout.php">Quitter</a>
