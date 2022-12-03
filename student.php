@@ -19,43 +19,5 @@ if(empty($_SESSION["username"])){ header("location: login.php");}
 include("db.php");
 $db = new sql();
 
-$userinfo = $db->getUser($_SESSION["username"]);
-if($userinfo["role"]=="prof"){ header("location: index.php");}
-$name = $userinfo["name"];
-
-
-if(!empty($_POST["class"]) && !empty($_POST["name"])){
-	$newname = "";
-	if($name!=$_POST["name"]){ $newname = $_POST["name"];}
-	if($db->newstudent($_SESSION["username"], $_POST["class"], $newname)){
-	   header("location: index.php");
-	}else{
-	   echo("<span>Failed to save student profile.</span>");
-	}
-}
-
-$classes = $db->getclass();
-
-
-?>
-	<div id="wrapper" align="center">
-	
-	<form action="" method="POST">
-		<span>Name:<input name="name" type="text" value="<?php echo(htmlentities($name));?>" /></span>
-		<div>
-		  <label>Classes: </label>
-		  <select name="class">
-			<?php
-			  foreach($classes as $item){
-				  
-				  echo("<option value='{$item["class_name"]}'>{$item["class_name"]}</option>");
-			  }
-			?>
-		  </select></div>
-		
-		  
-		<input type="submit" value="Save"/>
-	</form>
-	</div>
 </body>
 </html>
