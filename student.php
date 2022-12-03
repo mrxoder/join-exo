@@ -32,6 +32,8 @@ session_start();
 if(empty($_SESSION["username"])){ header("location: login.php");}
 include("db.php");
 $db = new sql();
+
+
 ?>
 
 </body>
