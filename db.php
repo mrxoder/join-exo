@@ -29,160 +29,137 @@ class sql{
 		   return $prep->execute([$user, $pwd, $name]);
 	}
 	
-	public function newstudent($username,$class, $name=""){
+	public function newstudent($name,$birth, $parent, $addr, $class, $description="", $id=""){
 		   
 		   $db = $this->db;
-		   $user_id = ($this->getUser($username))["id"];
 		   $classdb = $this->getclass();
-		   $class_id = null;
+		   
+		   $cclass = null;
 		   foreach($classdb as $item){
-			   if($item["class_name"]==$class){
-			      $class_id = $item["id"];
+			   if($item["id"]==$class){
+			      $class= $item;
 			   }
 		   }
-		   if(!$user_id || $class_id==null){ return false;}
+		   if($cclass){ return false;}
 		   
-		   if(empty($this->getStudent($user_id))){
-			   $prep = $db->prepare("insert into students(user_id, class_id) value(?, ?)");
-			   if($prep->execute([$user_id, $class_id])){
-				   return $this->setrole("student", $username);
-			   }
+		   
+		   if($id==""){
+			   
+			   $prep = $db->prepare("insert into etudiant(nom, naissance, parents, adresse, idclasse, description) value(?,?,?,?,?,?)");
+			   return $prep->execute([$name,$birth, $parent, $addr, $class["id"], $description]);
 		   }else{
-			   $prep = $db->prepare("update students set class_id=? where user_id=?");
-			   $prep->execute([$class_id, $user_id]);
-		   }
-		   if(!empty($name)){
-			  $this->changename($username, $name);
+			   $prep = $db->prepare("update etudiant set nom=?, naissance=?, parents=?, adresse=?, idclasse=?, description=? where id=?");
+			   return $prep->execute([$name,$birth, $parent, $addr, $class["id"], $description, $id]);
 		   }
 		   
-		   return true;
 		   
 	}
 	
-	public function newprof($class, $course, $username, $name){
+	
+	public function newprof($name, $birth, $course, $addr, $class, $id=""){
+		   
 		   $db = $this->db;
-		   $user_id = ($this->getUser($username))["id"];
 		   $classdb = $this->getclass();
-		   $coursedb = $this->getcourses();
-		   $class_id = null;
-		   $course_id = null;
+		   
+		   $cclass = null;
 		   foreach($classdb as $item){
-			   if($item["class_name"]==$class){
-			      $class_id = $item["id"];
-			      break;
+			   if($item["id"]==$class){
+			      $class= $item;
 			   }
 		   }
-		   foreach($coursedb as $item){
-			   if($item["course_name"]==$course){
-			      $course_id = $item["id"];
-			      break;
-			   }
-		   }
+		   if($cclass){ return false;}
 		   
-		   if((!$user_id) || $class_id==null|| $course_id==null){ return false;}
 		   
-		   if(empty($this->getProf($user_id))){
-		       $prep = $db->prepare("insert into prof(user_id, course_id, class_id) value(?, ?, ?)");
-		       $prep->execute([$user_id, $course_id, $class_id]);
-		       return $this->setrole("prof", $username);
+		   if($id==""){
+			   
+			   $prep = $db->prepare("insert into professeur(nom, naissance, adresse, idmatiere, idclasse) value(?,?,?,?,?)");
+			   return $prep->execute([$name,$birth, $addr, $course, $class["id"]]);
 		   }else{
-			 
-			  $prep = $db->prepare("update prof set class_id=?,course=? where user_id=?");
-			  $prep->execute([$class_id, $course,$user_id]);
-		   }   
-		   
-		   if(!empty($name)){
-			  $this->changename($username, $name);
+			   $prep = $db->prepare("update professeur set nom=?, naissance=?, adresse=?, idmatiere=?, idclasse=? where id=?");
+			   return $prep->execute([$name,$birth, $addr, $course,$class["id"], $id]);
 		   }
-		   return true;
 		   
 	}
 	
-	public function changename($username, $name)
-	{
-		$db = $this->db;
-	    $prep = $db->prepare("update users set name=? where username=?");
-	    return $prep->execute([$name, $username]);
-	}
-	
-	public function getUser($username){
-		   $db = $this->db;
-		   $prep = $db->prepare("SELECT users.id,username,password,name,role,classes.class_name FROM `users` INNER JOIN students ON users.id=students.user_id INNER JOIN classes on students.class_id=classes.id WHERE username=?");
-		   $prep->execute([$username]);
-		   $data = $prep->fetch();
-		   if(empty($data)){
-			  $prep = $db->prepare("SELECT users.id,username,password,name,role,classes.class_name,courses.course_name FROM `users` INNER JOIN prof ON users.id=prof.user_id INNER JOIN classes on prof.class_id=classes.id INNER JOIN courses ON prof.course_id=courses.id WHERE username=?");
-		      $prep->execute([$username]);
-		      $data = $prep->fetch();
-		      if(empty($data)){
-				 $prep = $db->prepare("SELECT * FROM users where username=?");
-				 $prep->execute([$username]);
-		         $data = $prep->fetch();
-			  }
-		   }   
-		   return $data;
-	}
-	
-	public function getclassStudent($classid){
-		$db = $this->db;
-		$prep = $db->prepare("SELECT users.id,username,name,role,classes.class_name FROM `users` INNER JOIN students ON users.id=students.user_id INNER JOIN classes on students.class_id=classes.id WHERE students.class_id=?");
-	    $prep->execute([$classid]);
-	    return $prep->fetchAll();
-	}
-	
-	public function getclassProf($classid){
-		$db = $this->db;
-		$prep = $db->prepare("SELECT users.id,username,name,role,classes.class_name,courses.course_name FROM `users` INNER JOIN prof ON users.id=prof.user_id INNER JOIN classes on prof.class_id=classes.id INNER JOIN courses ON prof.course_id=courses.id WHERE prof.class_id=?");
-	    $prep->execute([$classid]);
-	    return $prep->fetchAll();
-	}
 	
 	public function getclass(){
 		$db = $this->db;
-		$prep = $db->prepare("select * from classes");
+		$prep = $db->prepare("select * from classe");
 		$prep->execute();
 		return $prep->fetchAll();   
 	}
 	
+	public function newClass($libelle, $capacity, $id=""){
+		$classes = $this->getclass();
+		$db = $this->db;
+		
+		if($id==""){
+			
+			$prep = $db->prepare("insert into classe(libelle, capacite) value(?, ?)");
+			return $prep->execute([$libelle, $capacity]);
+		}else{
+			$prep = $db->prepare("update classe set libelle=?,capacite=? where id=?");
+			return $prep->execute([$libelle, $capacity, $id]);
+	    }
+	}
+	
+	public function newCourse($name, $coef, $descr, $id=""){
+		$db = $this->db;
+		if($id==""){
+			$prep = $db->prepare("insert into matiere(nommatiere, coefficient, description) value(?, ?, ?)");
+			return $prep->execute([$name, $coef, $descr]);
+		}else{
+			echo("update");
+			$prep = $db->prepare("update matiere set nommatiere=?,coefficient=?,description=? where id=?");
+			return $prep->execute([$name, $coef, $descr, $id]);
+	    }
+	}
+	
+	public function deleteClasse($id){
+		$prep = $this->db->prepare("DELETE FROM classe WHERE id=?");
+		return $prep->execute([$id]);
+	}
+	
+	public function deleteCourse($id){
+		$prep = $this->db->prepare("DELETE FROM matiere WHERE id=?");
+		return $prep->execute([$id]);
+	}
+	
+	
+	
 	public function getcourses(){
 		$db = $this->db;
-		$prep = $db->prepare("select * from courses");
+		$prep = $db->prepare("select * from matiere");
 		$prep->execute();
 		return $prep->fetchAll();
 	}
 	
 	
-	public function getStudent($id){
+	public function getStudent($classid){
 		   $db = $this->db;
-		   $prep = $db->prepare("select * from students where user_id=?");
-		   $prep->execute([$id]);
+		   $prep = $db->prepare("select etudiant.id,nom,naissance,parents,description,adresse,classe.id as classId,classe.libelle from etudiant inner join classe on etudiant.idclasse=classe.id where classe.id=?");
+		   $prep->execute([$classid]);
 		   
-		   return $prep->fetch();
+		   return $prep->fetchAll();
 	}
 	
-	public function getProf($id){
+	public function getProf($classid){
 		   $db = $this->db;
-		   $prep = $db->prepare("select * from prof where user_id=?");
-		   $prep->execute([$id]);
+		   $prep = $db->prepare("select professeur.id,nom,naissance,adresse,classe.id as classId,matiere.id as matiereId, matiere.nomMatiere,classe.libelle from professeur inner join classe on professeur.idclasse=classe.id INNER JOIN matiere ON professeur.idmatiere=matiere.id where classe.id=?");
+		   $prep->execute([$classid]);
 		   
-		   return $prep->fetch();
+		   return $prep->fetchAll();
+	}
+	
+	public function deleteStudent($id){
+		$prep = $this->db->prepare("DELETE FROM etudiant WHERE id=?");
+		return $prep->execute([$id]);
 	}
 	
 	
 	
-	public function userid($username){
-		   $db = $this->db;
-		   $prep = $db->prepare("select id from users where username=?");
-		   $prep->execute([$username]);
-		   return $prep->fetch();
-	}
 	
 	
-	public function setrole($role, $username){
-		$db = $this->db;
-	    $prep = $db->prepare("update users set role=? where username=?");
-	    return $prep->execute([$role, $username]);
-	}
 	
 	public function login($user, $pwd){
 		$dbpwd  = $this->getUser($user)["password"];

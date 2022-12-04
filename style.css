@@ -23,6 +23,14 @@
   color: white;
 }
 
+.active {
+  background-color: #2e59d9;
+  color: white;
+}
+.active a{
+  color: white;
+}
+
 /* Links on mouse-over */
 .sidebar a:hover:not(.active) {
   background-color: #555;
@@ -54,3 +62,6 @@ div.content {
     float: none;
   }
 } 
+
+
+
