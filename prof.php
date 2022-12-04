@@ -48,12 +48,13 @@ $profs   = $db->getProf($cclass);
 	<title>Professeur</title>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<meta name="generator" content="Geany 1.38" />
+	<meta http-equiv="viewport" content="width=device-width" />
 	<link rel="stylesheet" href="boot/css/bootstrap.min.css"/>
 	<link rel="stylesheet" href="style.css" />
 	
 	<style>
 		 .input{
-            margin: 2% 0 0 2%;
+           margin: 2% 0 0 15%;
          }
     </style>
 	
@@ -62,11 +63,12 @@ $profs   = $db->getProf($cclass);
 <body class="bg-light">
 	 
   <div class="sidebar">
-	  <a href="#"  >School</a>
-	  <a href="index.php"  >Classe</a>
+	  <a href="index.php"  >School</a>
+	  <a href="classe.php"   >Classe</a>
 	  <a href="student.php">Etudiant</a>
 	  <a href="prof.php" class="active">Professeur</a>
 	  <a href="course.php">Matière</a>
+	  <a href="admin.php">Admin</a>
 	  <a href="logout.php">Quitter</a>
   </div>
 

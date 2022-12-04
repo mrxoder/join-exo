@@ -7,6 +7,7 @@
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<meta name="generator" content="Geany 1.38" />
 	<link rel="stylesheet" href="boot/css/bootstrap.min.css"/>
+	<meta name="viewport" content="width=device-width" />
 	<style>
 	   #ct{
 		  margin:3% 0 0 0;
@@ -22,7 +23,7 @@
 
 <?php
 
-if(!empty($_GET["message"])){ echo("<span>".htmlentities($_GET["message"])."</span>");}
+if(!empty($_GET["message"])){ echo("<center><span>".htmlentities($_GET["message"])."</span></center>");}
 
 session_start();
 if(!empty($_SESSION["username"])){ header("location: profile.php");}
@@ -37,7 +38,7 @@ if(!empty($_POST["user"]) && !empty($_POST["pass"])){
 	   $_SESSION["username"]  = $_POST["user"];
 	   header("location: index.php");
 	}else{
-	   echo("<span>failed, incorrect username or password</span>");
+	   echo("<center><span>Failed, incorrect username or password</span></center>");
 	}
 
 }
@@ -48,8 +49,8 @@ if(!empty($_POST["user"]) && !empty($_POST["pass"])){
 			<div class="col-lg-4"></div>
 			<div class="col-lg-6">
 				<form action="" method="POST">
-					<div><input name="user" type="text" placeholder="Username"/></div>
-					<div><input name="pass" type="password" placeholder="Password"/></div>
+					<div><input name="user" type="text" placeholder="Username" required/></div>
+					<div><input name="pass" type="password" placeholder="Password" required/></div>
 				<div><input type="submit" value="Login"/> <a href="registration.php">SignUp</a></div>
 				</form>
 		</div></div>

@@ -65,9 +65,10 @@ if($cid!=""){
 	<meta name="generator" content="Geany 1.38" />
 	<link rel="stylesheet" href="boot/css/bootstrap.min.css"/>
 	<link rel="stylesheet" href="style.css" />
+	<meta http-equiv="viewport" content="width=device-width" />
 	<style>
 		 .input{
-            margin: 2% 0 0 2%;
+           margin: 2% 0 0 15%;
          }
     </style>
 </head>
@@ -75,11 +76,12 @@ if($cid!=""){
 <body class="bg-light">
 	 
   <div class="sidebar">
-	  <a href="#"  >School</a>
-	  <a href="index.php"  >Classe</a>
+	  <a href="index.php">School</a>
+	 <a href="classe.php"   >Classe</a>
 	  <a href="student.php">Etudiant</a>
 	  <a href="prof.php">Professeur</a>
 	  <a href="course.php" class="active">Matière</a>
+	  <a href="admin.php">Admin</a>
 	  <a href="logout.php">Quitter</a>
   </div>
 

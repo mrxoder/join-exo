@@ -62,7 +62,7 @@ $students = $db->getStudent($cclass);
     
     <style>
 		 .input{
-            margin: 2% 0 0 2%;
+           margin: 2% 0 0 15%;
          }
     </style>
 </head>
@@ -70,11 +70,12 @@ $students = $db->getStudent($cclass);
 <body class="bg-light">
 	 
   <div class="sidebar">
-	  <a href="#">School</a>
-	  <a href="index.php" >Classe</a>
+	  <a href="index.php">School</a>
+	  <a href="classe.php"  >Classe</a>
 	  <a href="student.php" class="active">Etudiant</a>
 	  <a href="prof.php">Professeur</a>
 	  <a href="course.php">Matière</a>
+	  <a href="admin.php">Admin</a>
 	  <a href="logout.php">Quitter</a>
   </div>
 

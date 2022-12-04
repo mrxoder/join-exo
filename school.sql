@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : localhost
--- Généré le : ven. 02 déc. 2022 à 12:51
+-- Généré le : Dim 04 déc. 2022 à 17:41
 -- Version du serveur :  10.4.14-MariaDB
 -- Version de PHP : 7.2.34
 
@@ -24,64 +24,57 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Structure de la table `classes`
+-- Structure de la table `classe`
 --
 
-CREATE TABLE `classes` (
+CREATE TABLE `classe` (
   `id` int(11) NOT NULL,
-  `class_name` varchar(100) NOT NULL
+  `libelle` varchar(100) NOT NULL UNIQUE,
+  `capacite` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Déchargement des données de la table `classes`
---
-
-INSERT INTO `classes` (`id`, `class_name`) VALUES
-(3, 'class1'),
-(4, 'class2');
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `courses`
+-- Structure de la table `etudiant`
 --
 
-CREATE TABLE `courses` (
+CREATE TABLE `etudiant` (
   `id` int(11) NOT NULL,
-  `course_name` varchar(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Déchargement des données de la table `courses`
---
-
-INSERT INTO `courses` (`id`, `course_name`) VALUES
-(5, 'Mathematic'),
-(6, 'Physic'),
-(7, 'French'),
-(8, 'English');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `prof`
---
-
-CREATE TABLE `prof` (
-  `user_id` int(11) NOT NULL,
-  `course_id` int(11) NOT NULL,
-  `class_id` int(11) NOT NULL
+  `nom` varchar(100) DEFAULT NULL,
+  `naissance` varchar(100) DEFAULT NULL,
+  `parents` varchar(100) DEFAULT NULL,
+  `description` varchar(100) DEFAULT NULL,
+  `adresse` varchar(100) DEFAULT NULL,
+  `idclasse` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `students`
+-- Structure de la table `matiere`
 --
 
-CREATE TABLE `students` (
-  `user_id` int(100) NOT NULL,
-  `class_id` int(100) NOT NULL
+CREATE TABLE `matiere` (
+  `id` int(11) NOT NULL,
+  `coefficient` int(11) NOT NULL,
+  `nommatiere` varchar(100) DEFAULT NULL UNIQUE,
+  `description` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `professeur`
+--
+
+CREATE TABLE `professeur` (
+  `id` int(11) NOT NULL,
+  `nom` varchar(100) DEFAULT NULL,
+  `naissance` varchar(100) DEFAULT NULL,
+  `adresse` varchar(100) DEFAULT NULL,
+  `idmatiere` int(11) DEFAULT NULL,
+  `idclasse` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -92,10 +85,9 @@ CREATE TABLE `students` (
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
-  `username` varchar(32) NOT NULL,
+  `username` varchar(32) NOT NULL UNIQUE,
   `password` varchar(200) NOT NULL,
-  `name` varchar(150) NOT NULL,
-  `role` varchar(32) DEFAULT 'Not defined'
+  `name` varchar(150) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -103,15 +95,28 @@ CREATE TABLE `users` (
 --
 
 --
--- Index pour la table `classes`
+-- Index pour la table `classe`
 --
-ALTER TABLE `classes`
+ALTER TABLE `classe`
   ADD PRIMARY KEY (`id`);
 
 --
--- Index pour la table `courses`
+-- Index pour la table `etudiant`
 --
-ALTER TABLE `courses`
+ALTER TABLE `etudiant`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Index pour la table `matiere`
+--
+ALTER TABLE `matiere`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nommatiere` (`nommatiere`);
+
+--
+-- Index pour la table `professeur`
+--
+ALTER TABLE `professeur`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -125,22 +130,34 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT pour la table `classes`
+-- AUTO_INCREMENT pour la table `classe`
 --
-ALTER TABLE `classes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+ALTER TABLE `classe`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT pour la table `courses`
+-- AUTO_INCREMENT pour la table `etudiant`
 --
-ALTER TABLE `courses`
+ALTER TABLE `etudiant`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT pour la table `matiere`
+--
+ALTER TABLE `matiere`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT pour la table `professeur`
+--
+ALTER TABLE `professeur`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
