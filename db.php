@@ -2,13 +2,13 @@
 
 class sql{
 	
-	function __construct($host="localhost", $user="root", $pwd="", $dbname="school"){
-				  $this->host = $host;
-				  $this->user = $user;
-				  $this->pwd = $pwd;
-				  $this->dbname = $dbname;
-				  $this->db = $this->connect();
-	 			  
+	function __construct(){
+          //sql config
+		  $this->host = "localhost";//sql host
+		  $this->user = "root";//sql user
+		  $this->pwd = "";//sql password
+		  $this->dbname = "school";//sql database name
+		  $this->db = $this->connect();
 	}
 	
 	private function connect(){
@@ -18,15 +18,25 @@ class sql{
 				$sql = new PDO($host, $this->user, $this->pwd);
 			    return $sql;
 			}catch(PDOException $e){
-				  return Null;
+				  return False;
 			}
     }
-		
-	public function newuser($user, $pwd, $name){
+	
+    public checkTable($tab){
+		$prep = $this->db->prepare("select 1 from $tab limit 1");
+		return $prep->execute();
+	}
+	
+	public function newuser($user, $pwd, $name, $id=""){
 		   $db = $this->db;
 		   $pwd  = password_hash($pwd, 1);
-		   $prep = $db->prepare("insert into users(username, password, name) value(?, ?, ?)");
-		   return $prep->execute([$user, $pwd, $name]);
+		   if($id==""){
+		       $prep = $db->prepare("insert into users(username, password, name) value(?, ?, ?)");
+		       return $prep->execute([$user, $pwd, $name]);
+		   }else{
+			   $prep = $db->prepare("update users set username=?, password=?, name=? where id=?");
+		       return $prep->execute([$user, $pwd, $name, $id]);
+		   }
 	}
 	
 	public function newstudent($name,$birth, $parent, $addr, $class, $description="", $id=""){
@@ -81,14 +91,6 @@ class sql{
 		   
 	}
 	
-	
-	public function getclass(){
-		$db = $this->db;
-		$prep = $db->prepare("select * from classe");
-		$prep->execute();
-		return $prep->fetchAll();   
-	}
-	
 	public function newClass($libelle, $capacity, $id=""){
 		$classes = $this->getclass();
 		$db = $this->db;
@@ -115,17 +117,13 @@ class sql{
 	    }
 	}
 	
-	public function deleteClasse($id){
-		$prep = $this->db->prepare("DELETE FROM classe WHERE id=?");
-		return $prep->execute([$id]);
+	
+	public function getclass(){
+		$db = $this->db;
+		$prep = $db->prepare("select * from classe");
+		$prep->execute();
+		return $prep->fetchAll();   
 	}
-	
-	public function deleteCourse($id){
-		$prep = $this->db->prepare("DELETE FROM matiere WHERE id=?");
-		return $prep->execute([$id]);
-	}
-	
-	
 	
 	public function getcourses(){
 		$db = $this->db;
@@ -133,7 +131,6 @@ class sql{
 		$prep->execute();
 		return $prep->fetchAll();
 	}
-	
 	
 	public function getStudent($classid){
 		   $db = $this->db;
@@ -151,21 +148,33 @@ class sql{
 		   return $prep->fetchAll();
 	}
 	
+	public function getUser($user){
+		$prep = $this->db->prepare("select * from users where username=?");
+		$prep->execute([$user]);
+		return $prep->fetch();
+	}
+	
+	
+	public function deleteClasse($id){
+		$prep = $this->db->prepare("DELETE FROM classe WHERE id=?");
+		return $prep->execute([$id]);
+	}
+	
+	public function deleteCourse($id){
+		$prep = $this->db->prepare("DELETE FROM matiere WHERE id=?");
+		return $prep->execute([$id]);
+	}
+	
 	public function deleteStudent($id){
 		$prep = $this->db->prepare("DELETE FROM etudiant WHERE id=?");
 		return $prep->execute([$id]);
 	}
 	
 	
-	
-	
-	
-	
 	public function login($user, $pwd){
 		$dbpwd  = $this->getUser($user)["password"];
 		return password_verify($pwd, $dbpwd);
 	}
-	
 	
 }
 	
