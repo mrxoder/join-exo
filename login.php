@@ -6,7 +6,7 @@
 	<title>Login</title>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 	<meta name="generator" content="Geany 1.38" />
-	<link rel="stylesheet" href="boot/css/bootstrap.min.css"/>
+	<link rel="stylesheet" href="public/boot/css/bootstrap.min.css"/>
 	<meta name="viewport" content="width=device-width" />
 	<style>
 	   #ct{
@@ -22,17 +22,16 @@
 <body>
 
 <?php
+include("autoload.php");
 
 if(!empty($_GET["message"])){ echo("<center><span>".htmlentities($_GET["message"])."</span></center>");}
 
 session_start();
 if(!empty($_SESSION["username"])){ header("location: profile.php");}
 
-include("db.php");
-
 if(!empty($_POST["user"]) && !empty($_POST["pass"])){
 
-	$db = new sql();
+	$db = new models\sql();
 	if($db->login($_POST["user"], $_POST["pass"])){
 	   
 	   $_SESSION["username"]  = $_POST["user"];

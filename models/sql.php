@@ -1,28 +1,50 @@
 <?php 
 
+namespace models;
+
 class sql{
 	
+	private static $dbs=null;
+	
 	function __construct(){
-          //sql config
+          
 		  $this->host = "localhost";//sql host
 		  $this->user = "root";//sql user
 		  $this->pwd = "";//sql password
 		  $this->dbname = "school";//sql database name
-		  $this->db = $this->connect();
+		  if(is_null(self::$dbs)){
+		     self::$dbs = $this->connect();
+		  }
+		  $this->db = self::$dbs;
 	}
 	
 	private function connect(){
-				
+			
 		    $host = "mysql:host={$this->host};dbname={$this->dbname}";
 			try{
-				$sql = new PDO($host, $this->user, $this->pwd);
+				$sql = new \PDO($host, $this->user, $this->pwd);
 			    return $sql;
 			}catch(PDOException $e){
 				  return False;
 			}
     }
 	
-    public checkTable($tab){
+	public function insert($table, $data){
+		
+		$keys = array_keys($data);
+		$q = [];
+		$values = array_values($data);
+		for($i=0;$i<count($keys);$i++){
+		    array_push($q, "?");
+		}
+		$sqlreq = "insert into {$table}(". implode(",", $keys) .") value(".implode(",", $q).")";
+		
+		$prep = $this->db->prepare($sqlreq);
+		return $prep->execute($values);
+		
+	}
+	
+    public function checkTable($tab){
 		$prep = $this->db->prepare("select 1 from $tab limit 1");
 		return $prep->execute();
 	}
@@ -31,8 +53,9 @@ class sql{
 		   $db = $this->db;
 		   $pwd  = password_hash($pwd, 1);
 		   if($id==""){
-		       $prep = $db->prepare("insert into users(username, password, name) value(?, ?, ?)");
-		       return $prep->execute([$user, $pwd, $name]);
+			   
+		       return $this->insert("users", ["username"=>$user, "password"=>$pwd, "name"=>$name]);
+		       
 		   }else{
 			   $prep = $db->prepare("update users set username=?, password=?, name=? where id=?");
 		       return $prep->execute([$user, $pwd, $name, $id]);
@@ -55,14 +78,23 @@ class sql{
 		   
 		   if($id==""){
 			   
-			   $prep = $db->prepare("insert into etudiant(nom, naissance, parents, adresse, idclasse, description) value(?,?,?,?,?,?)");
-			   return $prep->execute([$name,$birth, $parent, $addr, $class["id"], $description]);
+			   if( count($this->getStudent($class["id"])) >= (int)($class["capacite"])){ 
+				   
+				   return False;
+			   }
+			   
+			   return $this->insert("etudiant", [ "nom"=>$name, 
+				   "naissance"=>$birth,
+				   "parents"=>$parent,
+				   "adresse"=>$addr,
+				   "idclasse"=>$class["id"],
+				   "description"=>$description
+			   ]);
+			   
 		   }else{
 			   $prep = $db->prepare("update etudiant set nom=?, naissance=?, parents=?, adresse=?, idclasse=?, description=? where id=?");
 			   return $prep->execute([$name,$birth, $parent, $addr, $class["id"], $description, $id]);
 		   }
-		   
-		   
 	}
 	
 	
@@ -81,9 +113,7 @@ class sql{
 		   
 		   
 		   if($id==""){
-			   
-			   $prep = $db->prepare("insert into professeur(nom, naissance, adresse, idmatiere, idclasse) value(?,?,?,?,?)");
-			   return $prep->execute([$name,$birth, $addr, $course, $class["id"]]);
+			   return $this->insert("professeur", ["nom"=>$name,"naissance"=>$birth, "adresse"=>$addr, "idmatiere"=>$course, "idclasse"=>$class["id"]]);
 		   }else{
 			   $prep = $db->prepare("update professeur set nom=?, naissance=?, adresse=?, idmatiere=?, idclasse=? where id=?");
 			   return $prep->execute([$name,$birth, $addr, $course,$class["id"], $id]);
@@ -96,9 +126,7 @@ class sql{
 		$db = $this->db;
 		
 		if($id==""){
-			
-			$prep = $db->prepare("insert into classe(libelle, capacite) value(?, ?)");
-			return $prep->execute([$libelle, $capacity]);
+			return $this->insert("classe", ["libelle"=>$libelle, "capacite"=>$capacity]);
 		}else{
 			$prep = $db->prepare("update classe set libelle=?,capacite=? where id=?");
 			return $prep->execute([$libelle, $capacity, $id]);
@@ -108,8 +136,8 @@ class sql{
 	public function newCourse($name, $coef, $descr, $id=""){
 		$db = $this->db;
 		if($id==""){
-			$prep = $db->prepare("insert into matiere(nommatiere, coefficient, description) value(?, ?, ?)");
-			return $prep->execute([$name, $coef, $descr]);
+			
+			return $this->insert("matiere", ["nommatiere"=>$name, "coefficient"=>$coef, "description"=>$descr]);
 		}else{
 			echo("update");
 			$prep = $db->prepare("update matiere set nommatiere=?,coefficient=?,description=? where id=?");
@@ -148,6 +176,14 @@ class sql{
 		   return $prep->fetchAll();
 	}
 	
+	public function getProfBycourse($courseId){
+		   $db = $this->db;
+		   $prep = $db->prepare("select professeur.id,nom,naissance,adresse,classe.id as classId,matiere.id as matiereId, matiere.nomMatiere,classe.libelle from professeur inner join classe on professeur.idclasse=classe.id INNER JOIN matiere ON professeur.idmatiere=matiere.id where matiere.id=?");
+		   $prep->execute([$courseId]);
+		   
+		   return $prep->fetchAll();
+	}
+	
 	public function getUser($user){
 		$prep = $this->db->prepare("select * from users where username=?");
 		$prep->execute([$user]);
@@ -156,13 +192,21 @@ class sql{
 	
 	
 	public function deleteClasse($id){
+		$students = $this->getStudent($id);
+		$profs = $this->getProf($id);
+		if(!count($student)>0 || !count($prof)>0){
+			return False;
+		}
 		$prep = $this->db->prepare("DELETE FROM classe WHERE id=?");
 		return $prep->execute([$id]);
 	}
 	
 	public function deleteCourse($id){
+		if(count($this->getProfBycourse($id))>0){ return false;}
 		$prep = $this->db->prepare("DELETE FROM matiere WHERE id=?");
 		return $prep->execute([$id]);
+		
+		
 	}
 	
 	public function deleteStudent($id){

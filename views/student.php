@@ -1,89 +1,44 @@
 <?php
 
-session_start();
-if(empty($_SESSION["username"])){ header("location: login.php");}
-include("db.php");
-$db = new sql();
 
-$classes = $db->getclass();
+namespace views;
 
-$cclass = "";
-if(!empty($_GET["class"])){
+class student{
 	
-	$cclass = $_GET["class"];
-}else{
-	$cclass = $classes[0]["id"];
-}
-
-
-if(!empty($_GET["delete"])){
-	$id = $_GET["delete"];
-	if($db->deleteStudent($id)){
-		 $id = htmlentities($id);
-	     echo("<center><span  class='text-success notif' >Student id $id delete with success.</span></center>");
-	}else{
-		 $id = htmlentities($id);
-	     echo("<center><span  class='text-danger notif' >Failed to delete student id $id.</span></center>");
-	}
-}else{
-	
-}
-
-
-if(!empty($_POST["nom"]) && !empty($_POST["date"]) && !empty($_POST["lieu"]) && !empty($_POST["pnom"]) && !empty($_POST["mnom"]) && !empty($_POST["addr"]) && !empty($_POST["classe"])){
-	$description = "";
-	$cid = "";
-	if(!empty($_POST["descr"])){ $description = $_POST["descr"];}
-	if(!empty($_POST["id"])){ $cid = $_POST["id"];}
-	
-	if($db->newstudent($_POST["nom"], $_POST["date"]."#".$_POST["lieu"], $_POST["pnom"]."#".$_POST["mnom"], $_POST["addr"], $_POST["classe"], $description, $cid)){
-	    echo("<center><span  class='text-success notif' >Success.</span></center>");
-	}else{
-	     echo("<center><span  class='text-danger notif' >Failed.</span></center>");
+	public function __construct($var=[]){
+		$this->var = $var;
+		
+		$this->header();
+		new sidebar((new \controls\routes())->value, "student");
+		$this->content();
+		$this->script();
+		$this->footer();
 	}
 	
-}
-
-$students = $db->getStudent($cclass);
-
-
+	public function header()
+	{
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-
-<head>
-	<title>Student</title>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8" />
-	<meta name="generator" content="Geany 1.38" />
-	<link rel="stylesheet" href="boot/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="style.css" />
-    
-    <style>
-		 .input{
-           margin: 2% 0 0 15%;
-         }
-    </style>
-</head>
-
-<body class="bg-light">
-	 
-  <div class="sidebar">
-	  <a href="index.php">School</a>
-	  <a href="classe.php"  >Classe</a>
-	  <a href="student.php" class="active">Etudiant</a>
-	  <a href="prof.php">Professeur</a>
-	  <a href="course.php">Matière</a>
-	  <a href="admin.php">Admin</a>
-	  <a href="logout.php">Quitter</a>
-  </div>
-
-
+		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+			"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+		<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+		
+		<head>
+			<title>Student</title>
+<?php
+		include("header.html");
+	}
+	
+	
+	public function content(){
+		$students = $this->var["students"];
+		$classes = $this->var["classes"];
+		$cclass = $this->var["cclass"];
+?>
 <div class="content">
     
     <div class="input">
-     <form action="?class=<?php echo(htmlentities($cclass));?>" class="form-horizontal" method="post">
+     <form action="index.php?page=student&class=<?php echo(htmlentities($cclass));?>" class="form-horizontal" method="post">
 		 
 		 
 		 <?php
@@ -123,7 +78,7 @@ $students = $db->getStudent($cclass);
 			   <input type="date" style="width:40%;" class="form-control" id="date" name="date" value="<?php echo(htmlentities($student["date"])); ?>" required />
 			 </div>
 			 <div col="col-sm-10">
-			   <input type="text" placeholder="lieu" style="width:40%;"class="form-control" id="lieu" name="lieu" value="<?php echo(htmlentities($student["lieu"])); ?>" required />
+			   <input type="text" placeholder="lieu" style="width:40%; margin-top:1%;"class="form-control" id="lieu" name="lieu" value="<?php echo(htmlentities($student["lieu"])); ?>" required />
 			 </div> 
 		</div>
 		
@@ -154,7 +109,7 @@ $students = $db->getStudent($cclass);
 			 <label class="control-label " for="classe">Classe: </label>
 			 <div col="col-sm-10">
 				 
-			   <select style="width:30%;" class="form-control" id="classe" name="classe">
+			   <select style="width:40%;" class="form-control" id="classe" name="classe">
 				   <?php
 				       
 				       foreach($classes as $class){
@@ -178,8 +133,8 @@ $students = $db->getStudent($cclass);
 	    </div>
 		
 		 <div class="form-group">
-		    <div class="col-sm-offset-2 col-sm-10">
-		        <input type="submit" value="Add" class="btn btn-primary"/>
+		    <div class="col-sm-offset-2 col-sm-5">
+		        <input type="submit" value="Add" class="btn btn-primary" style="width: 50%;float: right;"/>
 		    </div>
 		 </div>
 	   </form>
@@ -194,7 +149,7 @@ $students = $db->getStudent($cclass);
 					  $active = "active";
 				  }	  
 		   ?>      
-				      <li class="nav-item <?php echo($active); ?>"><a href="student.php?class=<?php echo($class["id"]);?>#list" class="nav-link"><?php echo(htmlentities($class["libelle"]));?></a></li>
+				      <li class="nav-item <?php echo($active); ?>"><a href="index.php?page=student&class=<?php echo($class["id"]);?>" class="nav-link"><?php echo(htmlentities($class["libelle"]));?></a></li>
 		   <?php }  ?>
 		   
 		   
@@ -212,13 +167,30 @@ $students = $db->getStudent($cclass);
 					$i["naissance"] = str_replace("#", " ", $i["naissance"]);
 					$i["parents"] = str_replace("#", ", ", $i["parents"]);
 		?>
-		            <tr><td><?php echo($i["id"]); ?></td> <td><?php echo(htmlentities($i["nom"])); ?></td> <td><?php echo(htmlentities($i["naissance"])); ?></td> <td><?php echo($i["adresse"]); ?></td> <td><?php echo($i["libelle"]); ?></td> <td><?php echo($i["parents"]); ?></td>  <td><?php echo(htmlentities($i["description"])); ?></td> <td> <a href="?delete=<?php echo($i["id"]); ?>"><button class="btn btn-danger">Delete</button></a> <a href="?edit=<?php echo("{$i['id']}&class={$i['classId']}"); ?>"> <button class="btn btn-success">Edit</button></a> </td> </tr>
+		            <tr><td><?php echo($i["id"]); ?></td> <td><?php echo(htmlentities($i["nom"])); ?></td> <td><?php echo(htmlentities($i["naissance"])); ?></td> <td><?php echo($i["adresse"]); ?></td> <td><?php echo($i["libelle"]); ?></td> <td><?php echo($i["parents"]); ?></td>  <td><?php echo(htmlentities($i["description"])); ?></td> <td> <a href="index.php?page=professeur&delete=<?php echo($i["id"]); ?>"><button class="btn btn-danger">Delete</button></a> <a href="index.php?page=professeur&edit=<?php echo("{$i['id']}&class={$i['classId']}"); ?>"> <button class="btn btn-success">Edit</button></a> </td> </tr>
 	    <?php  } }?>
 	</table>
    
    
 </div> 
-<script src="js/jquery.js"></script>
-	<script src="js/notif.js"></script>
-</body>
-</html>
+<?php		
+		
+	}
+	
+	public function script(){
+		?>
+		<script src="public/js/jquery.js"></script>
+        <script src="public/js/notif.js"></script>
+
+		<?php
+	}
+	
+	public function footer(){
+		?>
+		</body>
+		</html>
+		<?php
+	}
+}
+
+?>
