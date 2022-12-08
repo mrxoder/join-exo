@@ -214,6 +214,11 @@ class sql{
 		return $prep->execute([$id]);
 	}
 	
+	public function deleteProf($id){
+		$prep = $this->db->prepare("DELETE FROM professeur WHERE id=?");
+		return $prep->execute([$id]);
+	}
+	
 	
 	public function login($user, $pwd){
 		$dbpwd  = $this->getUser($user)["password"];

@@ -35,6 +35,7 @@ class classe{
         <div class="content">
 	
 			<div class="input">
+		     
 		     <form action="index.php?page=classe" class="form-horizontal" method="post">
 				 <?php
 				     if($cid!=""){

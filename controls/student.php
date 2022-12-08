@@ -7,7 +7,9 @@ $cclass = "";
 if(!empty($_GET["class"])){
 	
 	$cclass = $_GET["class"];
+	
 }else{
+	
 	if(count($classes)>0){
 	  $cclass = $classes[0]["id"];
     }
@@ -23,8 +25,6 @@ if(!empty($_GET["delete"])){
 		 $id = htmlentities($id);
 	     echo("<center><span  class='text-danger notif' >Failed to delete student id $id.</span></center>");
 	}
-}else{
-	
 }
 
 
@@ -40,10 +40,10 @@ if(!empty($_POST["nom"]) && !empty($_POST["date"]) && !empty($_POST["lieu"]) && 
 	     echo("<center><span  class='text-danger notif' >Failed.</span></center>");
 	}
 	
+}else1{
+
+	$students = $db->getStudent($cclass);
+	
+	$view = new views\student(["classes"=>$classes, "cclass"=>$cclass, "students"=>$students]);
 }
-
-$students = $db->getStudent($cclass);
-
-$view = new views\student(["classes"=>$classes, "cclass"=>$cclass, "students"=>$students]);
-
 ?>

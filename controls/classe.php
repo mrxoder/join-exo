@@ -1,19 +1,6 @@
 <?php
 
 
-$cid = "";
-
-if(!empty($_POST["libelle"]) && !empty($_POST["capacity"])){
-   if(!empty($_POST["id"])){
-	  $cid = $_POST["id"];
-   }
-   
-   if($db->newClass($_POST["libelle"], $_POST["capacity"], $cid)){
-	   echo("<center><span  class='text-success notif' >success</span></center>");
-   }else{
-	   echo("<center><span class='text-danger notif'>failed</span></center>");
-   }
-}
 
 
 if(!empty($_GET["delete"])){

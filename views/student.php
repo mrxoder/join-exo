@@ -38,25 +38,11 @@ class student{
 <div class="content">
     
     <div class="input">
-     <form action="index.php?page=student&class=<?php echo(htmlentities($cclass));?>" class="form-horizontal" method="post">
+     <form id="form" class="form-horizontal" method="post">
 		 
 		 
 		 <?php
-	        $student = null;
-	        if(!empty($_GET["edit"])){
-				
-				foreach($students as $item){
-					if($_GET["edit"]==$item["id"]){
-					   $student = $item;
-					   $birth = explode("#", $item["naissance"]);
-					   $student["date"] = $birth[0];
-					   $student["lieu"] = $birth[1];
-					   $parent = explode("#", $item["parents"]);
-					   $student["pnom"] = $parent[0];
-					   $student["mnom"] = $parent[1];
-					   break;
-					}
-			    }
+	        //foreach students
 			    
        ?>
 		       <input type="hidden" name="id" value="<?php echo($student["id"]); ?>"/>
@@ -181,6 +167,7 @@ class student{
 		?>
 		<script src="public/js/jquery.js"></script>
         <script src="public/js/notif.js"></script>
+        <script src="public/js/student.js"></script>
 
 		<?php
 	}

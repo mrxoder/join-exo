@@ -1,0 +1,13 @@
+input[type="text"], input[type="password"]{
+	width:40%;
+}
+
+.input{
+    height: 300px;
+    overflow: scroll;
+    margin: 2% 0 0 5%;
+}
+
+.list{
+    margin: 5% 0 0 0;
+}

@@ -8,7 +8,7 @@
 	  
   }else{
 	  
-	  $user = $db->getUser($_SESSION["username"]);
+	  
 	  $view = new views\admin(["db"=>$db, "user"=>$user]);
 	  $view->header();
 	  new views\sidebar($routes->value, "admin");
