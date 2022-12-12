@@ -93,8 +93,9 @@ class controller{
 		$db = $this->db;
 		
 		if(!empty($_POST["action"])){
-			
+			$classes = $db->getclass();
 			switch($_POST["action"]){
+				
 				case "update":
 				    
 				    $cid = "";
@@ -114,7 +115,6 @@ class controller{
 				    break;
 				    
 				case "getlist":
-				    $classes = $this->classes;
 				    echo(json_encode(["status"=>"success", "data"=>$classes]));
 				break;
 				
@@ -195,7 +195,7 @@ class controller{
 							if(!empty($_POST["descr"])){ $description = $_POST["descr"];}
 							if(!empty($_POST["id"])){ $cid = $_POST["id"];}
 							
-							if($db->newstudent($_POST["nom"], $_POST["date"]."#".$_POST["lieu"], $_POST["pnom"]."#".$_POST["mnom"], $_POST["addr"], $_POST["classe"], $description, $cid)){
+							if($db->newstudent(htmlentities($_POST["nom"]), $_POST["date"]."#".htmlentities($_POST["lieu"]), htmlentities($_POST["pnom"])."#".htmlentities($_POST["mnom"]), $_POST["addr"], $_POST["classe"], $description, $cid)){
 							    echo(json_encode(["status"=>"success"]));
 							}else{
 							     echo(json_encode(["status"=>"fail"]));
@@ -224,20 +224,50 @@ class controller{
 		
 		if(!empty($_POST["action"])){
 			
-			$classes = $db->getclass();
+			$courses = $db->getcourses();
 			 
 			switch($_POST["action"]){
 				
 				case "edit":
+				    if(!empty($_POST["id"])){
+				       
+						foreach($courses as $item){
+							if($_POST["id"]==$item["id"]){
+							   echo(json_encode(["status"=>"success", "data"=>$item]));
+							   break;
+							}
+					    }
+					}
 				break;
 				
 				case "delete":
+				     if(!empty($_POST["id"])){
+						if($db->deleteCourse($_POST["id"])){
+							echo(json_encode(["status"=>"success"]));
+						}else{
+							echo(json_encode(["status"=>"fail"]));
+						}
+					}
 				break;
 				
 				case "getlist":
+				     echo(json_encode(["status"=>"success", "data"=>$courses]));
 				break;
 				
 				case "update":
+				     if(!empty($_POST["name"]) && !empty($_POST["coef"])){
+							$descr = "";
+							$id = "";
+							if(!empty($_POST["descr"])){ $descr=$_POST["descr"];}
+							if(!empty($_POST["id"])){ $id=$_POST["id"];}
+							
+							if($db->newCourse($_POST["name"],$_POST["coef"],$descr, $id)){
+							   echo(json_encode(["status"=>"success"]));
+						    }else{
+							   echo(json_encode(["status"=>"fail"]));
+						    }
+							
+				     }
 				break;
 				
 			}
@@ -257,7 +287,7 @@ class controller{
 			switch($_POST["action"]){
 				
 				case "edit":
-				     if(!empty($_POST["id"]) && $_POST["classid"]){
+				     if(!empty($_POST["id"]) && !empty($_POST["classid"])){
 				        $profs = $db->getProf($_POST["classid"]);
 						foreach($profs as $item){
 							if($_POST["id"]==$item["id"]){
@@ -294,12 +324,14 @@ class controller{
 							$matiere = $_POST["matiere"];
 						}
 						
-						if($db->newprof($_POST["nom"], $_POST["date"]."#".$_POST["lieu"], $matiere, $_POST["addr"], $_POST["classe"], $id)){
+						if($db->newprof($_POST["nom"], $_POST["date"]."#".htmlentities($_POST["lieu"]), $matiere, $_POST["addr"], $_POST["classe"], $id)){
 						    echo(json_encode(["status"=>"success"]));
 						}else{
 						     echo(json_encode(["status"=>"fail"]));
 						}
 						
+					}else{
+						echo(json_encode(["status"=>"fail", "message"=>"empty field"]));
 					}
 				    
 				break;

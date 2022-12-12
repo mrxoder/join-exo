@@ -3,8 +3,8 @@ input[type="text"], input[type="password"]{
 }
 
 .input{
-    height: 300px;
-    overflow: scroll;
+    height: 250px;
+    overflow-y: scroll;
     margin: 2% 0 0 5%;
 }
 

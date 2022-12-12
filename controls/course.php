@@ -19,20 +19,7 @@
 	    
 	}
 	
-	if(!empty($_POST["name"]) && !empty($_POST["coef"])){
-		
-		$descr = "";
-		$id = "";
-		if(!empty($_POST["descr"])){ $descr=$_POST["descr"];}
-		if(!empty($_POST["id"])){ $id=$_POST["id"];}
-		
-		if($db->newCourse($_POST["name"],$_POST["coef"],$descr, $id)){
-		   echo("<center><span  class='text-success notif' >Success</span></center>");
-	    }else{
-		   echo("<center><span class='text-danger notif'>Failed!</span></center>");
-	    }
-		
-	}
+	
 	
 	$courses=$db->getcourses();
 	$ccourse = Null;

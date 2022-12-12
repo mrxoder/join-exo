@@ -2,7 +2,8 @@
 
 <div class="input">
  
- <form class="form-horizontal" method="post">
+ <form class="form-horizontal" id="form" method="post">
+	 <input id="id" name="id" type="hidden" value=""/>
 	 <div class="form-group">
 		 <label class="control-label " for="libelle">Libelle: </label>
 		 <div col="col-sm-10">
@@ -23,6 +24,8 @@
 </form>
 </div>
 
-<table class="table list">
+<table class="table list" id="list">
 	 <th>ID</th><th>Libelle</th><th>Capacité</th> <th>Action</th>
 </table>
+
+<script src="public/js/classe.js"></script>

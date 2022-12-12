@@ -113,10 +113,10 @@ class sql{
 		   
 		   
 		   if($id==""){
-			   return $this->insert("professeur", ["nom"=>$name,"naissance"=>$birth, "adresse"=>$addr, "idmatiere"=>$course, "idclasse"=>$class["id"]]);
+			   return $this->insert("professeur", ["nom"=>htmlentities($name),"naissance"=>$birth, "adresse"=>htmlentities($addr), "idmatiere"=>$course, "idclasse"=>$class["id"]]);
 		   }else{
 			   $prep = $db->prepare("update professeur set nom=?, naissance=?, adresse=?, idmatiere=?, idclasse=? where id=?");
-			   return $prep->execute([$name,$birth, $addr, $course,$class["id"], $id]);
+			   return $prep->execute([htmlentities($name),$birth, htmlentities($addr), $course,$class["id"], $id]);
 		   }
 		   
 	}
@@ -137,11 +137,11 @@ class sql{
 		$db = $this->db;
 		if($id==""){
 			
-			return $this->insert("matiere", ["nommatiere"=>$name, "coefficient"=>$coef, "description"=>$descr]);
+			return $this->insert("matiere", ["nommatiere"=>htmlentities($name), "coefficient"=>$coef, "description"=>htmlentities($descr)]);
 		}else{
-			echo("update");
+			
 			$prep = $db->prepare("update matiere set nommatiere=?,coefficient=?,description=? where id=?");
-			return $prep->execute([$name, $coef, $descr, $id]);
+			return $prep->execute([htmlentities($name), $coef, htmlentities($descr), $id]);
 	    }
 	}
 	
