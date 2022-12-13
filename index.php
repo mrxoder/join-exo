@@ -1,25 +1,17 @@
 <?php
-
-session_start();
-if(empty($_SESSION["username"])){ header("location: login.php");}
-
-include("autoload.php");
-
-$routes = new controls\routes();
-$db = new models\sql();
-$controller = new controls\controller($db);
-
-if(!empty($_POST["page"]) && in_array($_POST["page"], $routes->value)){
-	
-	$page = $_POST["page"];
-	
-	call_user_func(array($controller, $_POST["page"]));
-	
-	
-}else{
-	
-	$controller->index();
-}
-
-
-?>
+    session_start() ;
+    const URL = "http://localhost/school/" ;
+    
+    include "Core/autoload.php" ;
+    
+    
+	if(!empty($_GET['action']) ) {
+	     Root::executer($_GET['action']) ;
+	}else {
+	     if(empty($_SESSION["username"])){ 
+			 InitializerControls::loadViews("login");
+	     }else{
+			 InitializerControls::loadViews("index") ;// Page par defaut:
+		 }
+	}
+    
