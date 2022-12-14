@@ -16,12 +16,13 @@ $(document).ready(function(){
 		   });
 		   
 		   $(".edit").click(function(){
-				   
-				   if(classid!=undefined){
-				     pageobj.getlist(classid);
-				   }else{
-					 pageobj.getlist();
-				   }
+				 pageobj.actionedit(this, function(){
+					   if(classid!=undefined){
+					     pageobj.getlist(classid);
+					   }else{
+						 pageobj.getlist();
+					   }
+			     })
 		   });
    }
    
@@ -618,6 +619,8 @@ $(document).ready(function(){
 		   document.location = "./logout";
 	   }
    }
+   
+   
    
    var main = new app();
 });

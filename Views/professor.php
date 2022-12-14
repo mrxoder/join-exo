@@ -12,7 +12,7 @@
 	    <div class="form-group">
 			 <label class="control-label " for="sex">Gender: </label>
 			 <div col="col-sm-5">
-			    <select name="gender" id="gender">
+			    <select class="form-control" style="width:40%;" name="gender" id="gender">
 					<option value="male">Male</option>
 					<option value="female">Female</option>
 			    </select>

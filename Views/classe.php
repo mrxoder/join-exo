@@ -1,6 +1,6 @@
 
 
-<div class="input">
+ <div class="input">
  
  <form class="form-horizontal" id="form" method="post">
 	 <input id="id" name="id" type="hidden" value=""/>
@@ -10,6 +10,7 @@
 		   <input type="text" placeholder="Libelle" class="form-control" id="libelle" name="libelle" value="" required />
 		 </div>
     </div>
+    
 	<div class="form-group capacity">
 		 <label class="control-label" for="capacity">Capacité: </label>
 		 <div col="col-sm-10">
