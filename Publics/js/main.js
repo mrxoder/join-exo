@@ -30,7 +30,9 @@ $(document).ready(function(){
 	   
 	   constructor(){
 		   
-		   this.page = $(".item")[0].text.trim();
+		   
+		   this.page = $(".item .title")[0].innerText.trim();
+		   console.log("page: ", this.page);
 		   var th = this;
 		   
 		   var baseuri = document.baseURI;
@@ -55,7 +57,7 @@ $(document).ready(function(){
 		   
 		   
 		   var tmp = this.page.charAt(0).toUpperCase() + this.page.slice(1);
-		   console.log("tmp: ", tmp);
+		   
 		   this.active($(`.item:contains(${tmp})`)[0]);
 		   
 		   $(".item").click(function(e){
@@ -70,12 +72,14 @@ $(document).ready(function(){
 			   ($(".item")[i]).className = "item";
 		   });
 		   item.className ="item active";
-		   document.title=(item.text).trim();
-		   this.page = (item.text).trim().toLowerCase()
+		   document.title=item.innerText.trim();
+		   this.page = item.innerText.trim().toLowerCase();
 		   var page = this.page;
+		   
 		   var th = this;
 		   this.gethtml(function(){
 			   
+			   console.log("page: ",page)
 			   var pageobj = eval(`new ${page};`);
 			   
 			   if(page=="professor" || page=="students" ){
@@ -115,7 +119,9 @@ $(document).ready(function(){
 						       if(res.status=="success"){
 								   
 								   res.data.map(function(item){
-									   	$(`<option value="${item.id}">${item.nommatiere}</option>`).appendTo($("#matiere"));			   
+									   	var matiere = $(`<option value="${item.id}">${item.nommatiere}</option>`);
+									   	matiere.appendTo($("#matiere"));	   
+									   	matiere.appendTo($("#editmatiere"));
 								   });
 								   
 								     
@@ -208,7 +214,7 @@ $(document).ready(function(){
 				   title.appendTo($("#list"));
 				   res.data.map(function(item){
 					   
-					   var row = $(`<tr> <td>${item.id}</td> <td>${item.libelle}</td> <td>${item.capacite}</td> <td><button class="btn btn-danger delete" classid="${item.id}">Delete</button> <button class="btn btn-success edit" classid="${item.id}">edit</button></td> </tr>`);
+					   var row = $(`<tr> <td>${item.id}</td> <td>${item.libelle}</td> <td>${item.capacite}</td> <td><button class="btn btn-danger delete" classid="${item.id}">Delete</button> <button class="btn btn-success edit" data-toggle="modal" data-target="#myModal" classid="${item.id}">edit</button></td> </tr>`);
 					   row.appendTo($("#list"));
 					   
 				   });
@@ -258,8 +264,8 @@ $(document).ready(function(){
 						   var res = res.data[0];
 						   
 						   $("#id").val(res.id);
-						   $("#libelle").val(res.libelle);
-						   $("#capacity").val(res.capacite);
+						   $("#editlibelle").val(res.libelle);
+						   $("#editcapacity").val(res.capacite);
 						   
 					   }else{ 
 						   
@@ -329,7 +335,7 @@ $(document).ready(function(){
 					   console.log(res.data);
 					   res.data.map(function(item){
 						   console.log(item.id);
-						   var row = $(`<tr> <td>${item.id}</td> <td>${item.nommatiere}</td> <td>${item.coefficient}</td> <td>${item.description}</td> <td><button class="delete btn btn-danger delete" courseid="${item.id}">Delete</button> <button class="edit btn btn-success edit" courseid="${item.id}">edit</button></td> </tr>`);
+						   var row = $(`<tr> <td>${item.id}</td> <td>${item.nommatiere}</td> <td>${item.coefficient}</td> <td>${item.description}</td> <td><button class="delete btn btn-danger delete" courseid="${item.id}">Delete</button> <button class="edit btn btn-success edit" data-toggle="modal" data-target="#myModal" courseid="${item.id}">edit</button></td> </tr>`);
 						   row.appendTo($("#list"));
 						   
 					   });
@@ -381,10 +387,10 @@ $(document).ready(function(){
 		   var header ={ url:`course/get/${courseid}`,type:"post",dataType:"json", success:function(res){
 		       if(res.status=="success"){
 				   var res = res.data[0];
-				   $("#id").val(res.id);
-				   $("#nom").val(res.nommatiere);
-				   $("#coef").val(res.coefficient);
-				   $("#description").text(res.description);
+				   $("#editid").val(res.id);
+				   $("#editnom").val(res.nommatiere);
+				   $("#editcoef").val(res.coefficient);
+				   $("#editdescription").text(res.description);
 
 			   }else{ 
 				   new swal({
@@ -420,7 +426,7 @@ $(document).ready(function(){
 						   n = n.join(" ");
 						   var p = (item.parents).split("#");
 						   p = p.join(", ");
-						   var row = $(`<tr> <td>${item.id}</td> <td>${item.nom}</td> <td>${item.gender}</td> <td>${n}</td> <td>${item.adresse}</td> <td>${p}</td> <td>${item.libelle}</td> <td>${item.description}</td> <td><button class="btn btn-danger delete" id="${item.id}">Delete</button> <button class="btn btn-success edit" id="${item.id}" classid="${classid}">edit</button></td> </tr>`);
+						   var row = $(`<tr class="${item.id}"> <td class="id">${item.id}</td> <td class="name">${item.nom}</td> <td class="gender">${item.gender}</td> <td class="naissance">${n}</td> <td class="addr">${item.adresse}</td> <td class="parent">${p}</td> <td class="libelle">${item.libelle}</td> <td class="descr">${item.description}</td> <td><button class="btn btn-danger delete" id="${item.id}">Delete</button> <button class="btn btn-success edit" data-toggle="modal" data-target="#myModal" id="${item.id}" classid="${classid}">edit</button></td> </tr>`);
 						   row.appendTo($("#list"));
 						     
 					   });
@@ -469,16 +475,16 @@ $(document).ready(function(){
 				       if(res.status=="success"){
 						   var res = res.data[0];
 						   var date = (res.naissance).split("#");
-						   $("#date").val(date[0]);
-						   $("#lieu").val(date[1]);
-						   $("#id").val(res.id);
-						   $("#gender").val(res.gender);
-						   $("#nom").val(res.nom);
-						   $("#addr").val(res.adresse);
-						   $("#description").text(res.description);
+						   $("#editdate").val(date[0]);
+						   $("#editlieu").val(date[1]);
+						   $("#editid").val(res.id);
+						   $("#editgender").val(res.gender);
+						   $("#editnom").val(res.nom);
+						   $("#editaddr").val(res.adresse);
+						   $("#editdescription").text(res.description);
 						   var p = (res.parents).split("#");
-						   $("#pnom").val(p[0]);
-						   $("#mnom").val(p[1]);
+						   $("#editpnom").val(p[0]);
+						   $("#editmnom").val(p[1]);
 
 					   }else{ 
 						   new swal({
@@ -511,7 +517,7 @@ $(document).ready(function(){
 					   var n = (item.naissance).split("#");
 					   n = n.join(" ");
 					   
-					   var row = $(`<tr> <td>${item.id}</td> <td>${item.nom}</td> <td>${item.gender}</td> <td>${n}</td> <td>${item.adresse}</td> <td>${item.nomMatiere}</td> <td>${item.libelle}</td> <td><button class="btn btn-danger delete" id="${item.id}">Delete</button> <button class="btn btn-success edit" id="${item.id}" classid="${classid}">edit</button></td> </tr>`);
+					   var row = $(`<tr> <td>${item.id}</td> <td>${item.nom}</td> <td>${item.gender}</td> <td>${n}</td> <td>${item.adresse}</td> <td>${item.nomMatiere}</td> <td>${item.libelle}</td> <td><button class="btn btn-danger delete" id="${item.id}">Delete</button> <button class="btn btn-success edit" data-toggle="modal" data-target="#myModal" id="${item.id}" classid="${classid}">edit</button></td> </tr>`);
 					   row.appendTo($("#list"));
 					   
 				   });
@@ -538,15 +544,15 @@ $(document).ready(function(){
 				       if(res.status=="success"){
 						   var res = res.data[0];
 						   var date = (res.naissance).split("#");
-						   $("#date").val(date[0]);
-						   $("#lieu").val(date[1]);
-						   $("#id").val(res.id);
-						   $("#nom").val(res.nom);
-						   $("#gender").val(res.gender);
-						   $("#matiere").val(res.idmatiere);
-						   $("#classe").val(res.idclasse);
-						   $("#addr").val(res.adresse);
-						   $("#description").text(res.description);
+						   $("#editdate").val(date[0]);
+						   $("#editlieu").val(date[1]);
+						   $("#editid").val(res.id);
+						   $("#editnom").val(res.nom);
+						   $("#editgender").val(res.gender);
+						   $("#editmatiere").val(res.idmatiere);
+						   $("#editclasse").val(res.idclasse);
+						   $("#editaddr").val(res.adresse);
+						   $("#editdescription").text(res.description);
 
 					   }else{ 
 						   
