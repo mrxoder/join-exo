@@ -1,6 +1,6 @@
 <div class="input">
  <form id="form" class="form-horizontal" method="post">
-	 <input id="id" name="id" type="hidden" value=""/>
+	 
 	 <div class="form-group">
 		 <label class="control-label " for="nom">Matière: </label>
 		 <div col="col-sm-10">
@@ -54,8 +54,7 @@
         <div class="modal-body">
             <form id="edit" class="form-group">
                 
-                <input type="hidden" name="id" value="" id="editid"/>
-                
+                <input type="hidden" name="id" value="" id="id"/>
                 
 	                <div class="form-group">
 						 <label class="control-label " for="nom">Matière: </label>
@@ -83,7 +82,7 @@
 
         <!-- Modal footer -->
         <div class="modal-footer">
-         <input type="submit" value="Save" class="btn btn-primary" style="width: 60%;float: right;"/>
+         <input type="submit" value="Save" form="edit" class="btn btn-primary" style="width: 60%;float: right;"/>
             </form>
         </div>
 

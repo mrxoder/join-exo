@@ -88,9 +88,7 @@
 		        <div class="modal-body">
 		            <form id="edit" class="form-group">
 		                
-		                <input type="hidden" name="id" value="" id="editid"/>
-		                
-		                
+		                <input type="hidden" name="id" value="" id="id"/>
 		                
 		                <div class="form-group">
 					 <label class="control-label " for="nom">Nom: </label>
@@ -142,14 +140,20 @@
 					 </div>
 			    </div>
                 
-                
+               <div >
+			    <label class="control-label " for="classe">Classe: </label>
+				 <div col="col-sm-10">
+				   <select style="width:100%;" form="edit" class="form-control" id="editclasse" name="classe">
+				   </select>
+				 </div>
+	         </div>
 	                
 	                
         </div>
 
         <!-- Modal footer -->
         <div class="modal-footer">
-         <input type="submit" value="Save" class="btn btn-primary" style="width: 60%;float: right;"/>
+         <input type="submit" value="Save" form="edit"  class="btn btn-primary" style="width: 60%;float: right;"/>
             </form>
         </div>
 

@@ -14,6 +14,7 @@
 						   <input type="text" placeholder="name" class="form-control" id="name" name="name" value="" required />
 						 </div>
 				    </div>
+				    
 					<div class="form-group">
 						 <label class="control-label " for="pwd">Current Password: </label>
 						 <div col="col-sm-10">

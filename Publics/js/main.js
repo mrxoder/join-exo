@@ -30,7 +30,6 @@ $(document).ready(function(){
 	   
 	   constructor(){
 		   
-		   
 		   this.page = $(".item .title")[0].innerText.trim();
 		   console.log("page: ", this.page);
 		   var th = this;
@@ -61,7 +60,8 @@ $(document).ready(function(){
 		   this.active($(`.item:contains(${tmp})`)[0]);
 		   
 		   $(".item").click(function(e){
-			   th.active(e.target);
+			   
+			   th.active($(this)[0]);
 		   });
 		   		   
 	   }
@@ -79,7 +79,7 @@ $(document).ready(function(){
 		   var th = this;
 		   this.gethtml(function(){
 			   
-			   console.log("page: ",page)
+			   
 			   var pageobj = eval(`new ${page};`);
 			   
 			   if(page=="professor" || page=="students" ){
@@ -90,9 +90,11 @@ $(document).ready(function(){
 								
 									var total = [data.totalst, data.totalprf];
 									var data = data.data;
-									
+									$("#classe").html("");
+									$("#editclasse").html("");
 									data.map(function(element){
-										$(`<option value="${element.id}">${element.libelle}</option>`).appendTo($("#classe"));
+										$(`<option value="${element.id}"></option>`).text(element.libelle).appendTo($("#classe"));
+										$(`<option value="${element.id}"></option>`).text(element.libelle).appendTo($("#editclasse"));
 									});
 									
 									pageobj.getlist((data[0]).id);
@@ -117,11 +119,12 @@ $(document).ready(function(){
 							   
 							   header ={ url:"course/getlist", type:"post", dataType:"json", async:false, success:function(res){
 						       if(res.status=="success"){
-								   
+								   $("#matiere").html("");
+								   $("#editmatiere").html("");
 								   res.data.map(function(item){
-									   	var matiere = $(`<option value="${item.id}">${item.nommatiere}</option>`);
-									   	matiere.appendTo($("#matiere"));	   
-									   	matiere.appendTo($("#editmatiere"));
+									   	
+									   	$(`<option value="${item.id}"></option>`).text(item.nommatiere).appendTo($("#matiere"));	   
+									   	$(`<option value="${item.id}"></option>`).text(item.nommatiere).appendTo($("#editmatiere"));
 								   });
 								   
 								     
@@ -146,40 +149,87 @@ $(document).ready(function(){
 			   
 			   
 			   $("#form").submit(function(e){
+					   
 					   e.preventDefault();
 					   
-					   var data = $(this).serialize();
+					   th.update(this, th.page).then(function(){
+					       
+					       if(th.page.trim()=="professor" || th.page.trim()=="students"){
+						      pageobj.getlist($("#classe").val());
+						   }else{
+						      pageobj.getlist();
+						   }
+						   
+						   $("#id").attr("value", "");
+					       $("#description").text("");
+						   $("#form")[0].reset();
+
+					   });
 					   
-					   var header ={ url:`${th.page}/update`,type:"post",dataType:"json",data:data, success:function(res){
-						       
-						       if(res.status=="success"){
-								   console.log("success");
-							   }else{ 
-								   
-								   new swal({
-									  title: "Failed",
-									  text: "",
-									  icon: "error",
-									});
-								   
-								   }
-							   if(th.page.trim()=="professor" || th.page.trim()=="students"){
-							      pageobj.getlist($("#classe").val());
-							   }else{
-							      pageobj.getlist();
-							   }
-							   
-							   $("#id").attr("value", "");
-						       $("#description").text("");
-							   $("#form")[0].reset();
-							   
-					   } };
-					   
-					   $.ajax(header);
 		       });
+		       
+		       
+		       $("#edit").submit(function(e){
+				       
+					   e.preventDefault();
+					   
+					   th.update(this, th.page).then(function(){
+					       
+					       if(th.page.trim()=="professor" || th.page.trim()=="students"){
+						      pageobj.getlist($("#classe").val());
+						   }else{
+						      pageobj.getlist();
+						   }
+						   
+						   
+						   $("#myModal").modal('hide');
+						   $("#edit")[0].reset();
+						   
+					   });
+					   
+		       });
+		       
+		       
+		       
+		       
+		       
+		       
 			   
 		   });
 		   
+	   }
+	   
+	   update(form, page){
+		   return new Promise(function(resolve, reject){
+			     
+			     var data = $(form).serialize();
+					   
+				 var header = { url:`${page}/update`,type:"post",dataType:"json",data:data, success:function(res){
+						       
+					       if(res.status=="success"){
+							   resolve();
+						   }else{ 
+							   var message = "";
+							   if(res.message!=undefined){
+								   message = res.message;
+							   }
+							   new swal({
+								  title: "Failed",
+								  text: message,
+								  icon: "error",
+							   }).then(function(){
+								    reject(); 
+							   });
+						   }
+						   
+						   
+					   }
+				 }
+				 
+				 $.ajax(header);
+			   
+			   
+		   });
 	   }
 	   
 	   gethtml(callback=undefined){
@@ -202,9 +252,8 @@ $(document).ready(function(){
     
     
     
-    
+   
    class classe{
-	      
 	   getlist(){
 	      var th = this;
 	      var header ={ url:"classe/getlist",type:"post",dataType:"json", async:false, success:function(res){
@@ -212,9 +261,14 @@ $(document).ready(function(){
 				   var title = $(`<th>ID</th><th>Libelle</th><th>Capacité</th> <th>Action</th>`);
 				   $("#list").html("");
 				   title.appendTo($("#list"));
+				   res.data = res.data.reverse();
 				   res.data.map(function(item){
+					   var row = $(`<tr></tr>`);
+					   $("<td></td>").text(item.id).appendTo(row);
+					   $("<td></td>").text(item.libelle).appendTo(row);
+					   $("<td></td>").text(item.capacite).appendTo(row);
+					   $(`<td><button class="btn btn-danger delete" classid="${item.id}">Delete</button> <button class="btn btn-success edit" data-toggle="modal" data-target="#myModal" classid="${item.id}">edit</button></td>`).appendTo(row);
 					   
-					   var row = $(`<tr> <td>${item.id}</td> <td>${item.libelle}</td> <td>${item.capacite}</td> <td><button class="btn btn-danger delete" classid="${item.id}">Delete</button> <button class="btn btn-success edit" data-toggle="modal" data-target="#myModal" classid="${item.id}">edit</button></td> </tr>`);
 					   row.appendTo($("#list"));
 					   
 				   });
@@ -296,11 +350,17 @@ $(document).ready(function(){
 				if(data.status=="success"){
 						
 						var total = [data.totalst, data.totalprf];
-						var data = data.data;
+						var data = data.data.reverse();
 						
 						data.map(function(element){
-							student = $(`<tr> <td>${element.name}</td> <td>${element.students}/${element.capacite}</td> </tr>`);
-							prof = $(`<tr> <td>${element.name}</td> <td>${element.profs}</td> </tr>`);
+							student = $(`<tr></tr>`);
+							$("<td></td>").text(element.name).appendTo(student);
+							$(`<td>${element.students}/${element.capacite}</td>`).appendTo(student);
+							
+							prof = $(`<tr></tr>`);
+							$("<td></td>").text(element.name).appendTo(prof);
+							$(`<td>${element.profs}</td>`).appendTo(prof);
+							
 							student.appendTo($("#stutab"));
 							prof.appendTo($("#proftab"));
 							
@@ -327,20 +387,26 @@ $(document).ready(function(){
 	   
 	   getlist(){
 	       var th=this;
-		   var header ={ url:"course/getlist", type:"post", dataType:"json", async:false, success:function(res){
+		   var header = { url:"course/getlist", type:"post", dataType:"json", async:false, success:function(res){
 			       if(res.status=="success"){
 					   var title = $(`<th>ID</th> <th>Matière</th> <th>Coefficient</th> <th>Descrisption</th>  <th>Action</th>`);
 					   $("#list").html("");
 					   title.appendTo($("#list"));
-					   console.log(res.data);
+					   res.data = res.data.reverse();
 					   res.data.map(function(item){
 						   console.log(item.id);
-						   var row = $(`<tr> <td>${item.id}</td> <td>${item.nommatiere}</td> <td>${item.coefficient}</td> <td>${item.description}</td> <td><button class="delete btn btn-danger delete" courseid="${item.id}">Delete</button> <button class="edit btn btn-success edit" data-toggle="modal" data-target="#myModal" courseid="${item.id}">edit</button></td> </tr>`);
+						   var row = $(`<tr> <td>${item.id}</td></tr>`);
+						   
+						   $(`<td></td>`).text(item.nommatiere).appendTo(row);
+						   $(`<td></td>`).text(item.coefficient).appendTo(row);
+						   $(`<td></td>`).text(item.description).appendTo(row);
+						   $(`<td><button class="delete btn btn-danger delete" courseid="${item.id}">Delete</button> <button class="edit btn btn-success edit" data-toggle="modal" data-target="#myModal" courseid="${item.id}">edit</button></td>`).appendTo(row);
+ 
 						   row.appendTo($("#list"));
 						   
 					   });
 					   bind(th);
-					     
+					   
 				   }else{ 
 					   
 					   new swal({
@@ -387,7 +453,7 @@ $(document).ready(function(){
 		   var header ={ url:`course/get/${courseid}`,type:"post",dataType:"json", success:function(res){
 		       if(res.status=="success"){
 				   var res = res.data[0];
-				   $("#editid").val(res.id);
+				   $("#id").val(res.id);
 				   $("#editnom").val(res.nommatiere);
 				   $("#editcoef").val(res.coefficient);
 				   $("#editdescription").text(res.description);
@@ -414,6 +480,7 @@ $(document).ready(function(){
 	    }
 	    
 	    getlist(classid){
+			  
 			   this.classid = classid;
 		       var th = this;
 			   var header = { url:`students/getlist/${classid}`, type:"post", dataType:"json", success:function(res){
@@ -421,13 +488,25 @@ $(document).ready(function(){
 					   var title = $(`<th>ID</th> <th>Nom</th> <th>Genre</th> <th>Naissance</th> <th>Adresse</th> <th>Parents</th>  <th>Classe</th> <th>Description</th> <th>Action</th>`);
 					   $("#list").html("");
 					   title.appendTo($("#list"));
+					   
 					   res.data.map(function(item){
-						   var n = (item.naissance).split("#");
+						   
+						   var n = (item.naissance).split("_");
 						   n = n.join(" ");
-						   var p = (item.parents).split("#");
+						   var p = (item.parents).split("_");
 						   p = p.join(", ");
-						   var row = $(`<tr class="${item.id}"> <td class="id">${item.id}</td> <td class="name">${item.nom}</td> <td class="gender">${item.gender}</td> <td class="naissance">${n}</td> <td class="addr">${item.adresse}</td> <td class="parent">${p}</td> <td class="libelle">${item.libelle}</td> <td class="descr">${item.description}</td> <td><button class="btn btn-danger delete" id="${item.id}">Delete</button> <button class="btn btn-success edit" data-toggle="modal" data-target="#myModal" id="${item.id}" classid="${classid}">edit</button></td> </tr>`);
+						   var row = $(`<tr class="${item.id}"></tr>`);
 						   row.appendTo($("#list"));
+						   $(`<td></td>`).text(item.id).appendTo(row);
+						   $(`<td ></td>`).text(item.nom).appendTo(row);
+							 $(`<td ></td>`).text(item.gender).appendTo(row);
+							 $(`<td ></td>`).text(n).appendTo(row);
+							 $(`<td ></td>`).text(item.adresse).appendTo(row);
+							 $(`<td ></td>`).text(p).appendTo(row);
+							 $(`<td ></td>`).text(item.libelle).appendTo(row);
+							 $(`<td ></td>`).text(item.description).appendTo(row);
+							 $(`<td><button class="btn btn-danger delete" id="${item.id}">Delete</button> <button class="btn btn-success edit" data-toggle="modal" data-target="#myModal" id="${item.id}" classid="${classid}">edit</button></td>`).appendTo(row);
+							 
 						     
 					   });
 					   
@@ -474,15 +553,15 @@ $(document).ready(function(){
 			   var header ={ url:`students/get/${classid}/${id}`,type:"post",dataType:"json", success:function(res){
 				       if(res.status=="success"){
 						   var res = res.data[0];
-						   var date = (res.naissance).split("#");
+						   var date = (res.naissance).split("_");
 						   $("#editdate").val(date[0]);
 						   $("#editlieu").val(date[1]);
-						   $("#editid").val(res.id);
+						   $("#id").val(res.id);
 						   $("#editgender").val(res.gender);
 						   $("#editnom").val(res.nom);
 						   $("#editaddr").val(res.adresse);
 						   $("#editdescription").text(res.description);
-						   var p = (res.parents).split("#");
+						   var p = (res.parents).split("_");
 						   $("#editpnom").val(p[0]);
 						   $("#editmnom").val(p[1]);
 
@@ -513,11 +592,19 @@ $(document).ready(function(){
 				   var title = $(`<th>ID</th> <th>Nom</th> <th>Genre</th> <th>Naissance</th> <th>Adresse</th> <th>Competence</th> <th>Classe</th> <th>Action</th>`);
 				   $("#list").html("");
 				   title.appendTo($("#list"));
+				   
 				   res.data.map(function(item){
-					   var n = (item.naissance).split("#");
-					   n = n.join(" ");
+					   var n = item.naissance.replaceAll("_", " ");
 					   
-					   var row = $(`<tr> <td>${item.id}</td> <td>${item.nom}</td> <td>${item.gender}</td> <td>${n}</td> <td>${item.adresse}</td> <td>${item.nomMatiere}</td> <td>${item.libelle}</td> <td><button class="btn btn-danger delete" id="${item.id}">Delete</button> <button class="btn btn-success edit" data-toggle="modal" data-target="#myModal" id="${item.id}" classid="${classid}">edit</button></td> </tr>`);
+					   var row = $(`<tr></tr>`);
+					   $(`<td ></td>`).text(item.id).appendTo(row);;
+					   $(`<td ></td>`).text(item.nom).appendTo(row); 
+					   $(`<td ></td>`).text(item.gender).appendTo(row);
+					   $(`<td ></td>`).text(n).appendTo(row);
+					   $(`<td ></td>`).text(item.adresse).appendTo(row);
+					   $(`<td ></td>`).text(item.nomMatiere).appendTo(row);
+					   $(`<td ></td>`).text(item.libelle).appendTo(row);
+					   $(`<td><button class="btn btn-danger delete" id="${item.id}">Delete</button> <button class="btn btn-success edit" data-toggle="modal" data-target="#myModal" id="${item.id}" classid="${classid}">edit</button></td>`).appendTo(row); 
 					   row.appendTo($("#list"));
 					   
 				   });
@@ -543,10 +630,10 @@ $(document).ready(function(){
 				       
 				       if(res.status=="success"){
 						   var res = res.data[0];
-						   var date = (res.naissance).split("#");
+						   var date = (res.naissance).split("_");
 						   $("#editdate").val(date[0]);
 						   $("#editlieu").val(date[1]);
-						   $("#editid").val(res.id);
+						   $("#id").val(res.id);
 						   $("#editnom").val(res.nom);
 						   $("#editgender").val(res.gender);
 						   $("#editmatiere").val(res.idmatiere);
@@ -625,8 +712,6 @@ $(document).ready(function(){
 		   document.location = "./logout";
 	   }
    }
-   
-   
    
    var main = new app();
 });

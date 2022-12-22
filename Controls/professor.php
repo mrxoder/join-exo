@@ -16,25 +16,42 @@ class professor{
 	public function update(){
 		
 		$res = null;
+		$message = "";
+		
 		if(empty($_POST["id"])){
-			
-			$res = $this->db->insert("professeur")
-			->parametters(["nom","naissance", "adresse", "idmatiere", "idclasse"])
-		    ->execute([ $_POST["nom"], $_POST["date"]."#".htmlentities($_POST["lieu"]), $_POST["addr"], $_POST["matiere"], $_POST["classe"]]);
-			
+			if(!$this->sql->getprofcnc($_POST["matiere"], $_POST["classe"])){
+				$res = $this->db->insert("professeur")
+				->parametters(["nom","naissance", "adresse", "idmatiere", "idclasse"])
+			    ->execute([htmlentities( $_POST["nom"]), htmlentities($_POST["date"])."_".htmlentities($_POST["lieu"]), htmlentities($_POST["addr"]), htmlentities($_POST["matiere"]), htmlentities($_POST["classe"])]);
+			}else{
+				$message = "Within a class, 1 professor for 1 course";
+			}
 		}else{
 			
-			$res = $this->db->update("professeur")
-			->parametters(["nom","naissance", "adresse", "idmatiere", "idclasse","gender"])
-			->where("id","=")
-			->execute([ $_POST["nom"], $_POST["date"]."#".htmlentities($_POST["lieu"]), $_POST["addr"], $_POST["matiere"], $_POST["classe"], $_POST["gender"], $_POST["id"]]);
+			$prf = $this->sql->getprofcnc($_POST["matiere"], $_POST["classe"]);
 			
+			for($i=0;$i<count($prf);$i++){
+				if($prf[$i]->id==$_POST["id"]){
+			       unset($prf[$i]);
+			    }
+			}
+			
+			
+			
+			if(count($prf)==0){
+				$res = $this->db->update("professeur")
+				->parametters(["nom","naissance", "adresse", "idmatiere", "idclasse","gender"])
+				->where("id","=")
+				->execute([ $_POST["nom"], $_POST["date"]."_".htmlentities($_POST["lieu"]), $_POST["addr"], $_POST["matiere"], $_POST["classe"], $_POST["gender"], $_POST["id"]]);
+			}else{
+				$message = "Within a class, 1 professor for 1 course";
+			}
 		}
 		
 		if($res){
 			echo(json_encode(["status"=>"success"]));
 		}else{
-			echo(json_encode(["status"=>"failed"]));
+			echo(json_encode(["status"=>"failed", "message"=>$message]));
 		}
 		
 	}

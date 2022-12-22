@@ -72,12 +72,21 @@ class Database{
 	public function getQuery() {
 		return $this->query ;
 	}
+	
 	public function select($table){
 		$table=htmlspecialchars(trim($table)) ;
 		$this->query = "SELECT * FROM ".$table ;
 		$this->lastTable =$table ;
 		return $this ;
 	}
+	
+	public function countRow($table, $col="id"){
+		$table=htmlspecialchars(trim($table)) ;
+		$this->query = "SELECT COUNT($col) FROM ".$table ;
+		$this->lastTable =$table ;
+		return $this ;
+	}
+	
 	public function where($id,$operateur){
 		$this->query .= " WHERE ".$id."".$operateur."?";
 
@@ -148,9 +157,15 @@ class Database{
 			$listeOrder.=$key. " ".$value."," ;
 		}
 		$listeOrder=trim($listeOrder,",") ;
-		$this->query.=$listeOrder ;
+		$this->query.=$listeOrder;
 		return $this ;
 	}
+	
+	public function limit($int){
+		$this->query .=" LIMIT {$int}";
+		return $this;
+	}
+	
 	// jointure entre 2 table
 	public function inner($table2,$id1) {
 		$table2=htmlspecialchars(trim($table2)) ;

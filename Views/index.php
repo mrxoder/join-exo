@@ -3,7 +3,6 @@
 ?>
 
 	<div class="sidebar">
-
             <a href="#" class="item"> <img width="32" height="32" src="Publics/icons/school.png" class="icon"/><span class="title">School</span> </a>
             <a href="#" class="item"> <img width="32" height="32" src="Publics/icons/classe.png" class="icon"/><span class="title">Classe</span> </a>
             <a href="#" class="item"> <img width="32" height="32" src="Publics/icons/course.png" class="icon"/><span class="title">Course</span> </a>
