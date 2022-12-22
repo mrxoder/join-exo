@@ -42,18 +42,21 @@ $(document).ready(function() {
 
     $("#myFormRegister").submit(function(e) {
         e.preventDefault() ;
+        var form = this;
         $.ajax({
             url: "UserControls/register" ,
             type: "post",
-            data: $(this).serialize() ,
+            data: $(form).serialize() ,
         })
         .done(function(data) {
             Swal.fire({
                 icon: 'success',
                 title: 'Bravo, Registered !',
                 text: 'Congratulations',
-                closeOnConfirm:true
-            })
+            }).then(function(){
+				$("#myModal").modal('hide');
+				$(form)[0].reset();
+			})
             
         })
         .fail(function(errorMessage) {
